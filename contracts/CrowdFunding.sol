@@ -7,6 +7,19 @@ contract CrowdFunding {
     uint256 public deadline;
     address public owner;
 
+    struct Tier{
+        string name;
+        uint256 amount;
+        uint256 backers;
+    }
+
+    Tier[] public tiers;
+
+    modifier onlyOwner(){
+        require(msg.sender == owner,"Only owner is allowed to perform this action");
+        _;
+    }
+
     constructor(
         string memory _name,
         string memory _description,
@@ -20,13 +33,37 @@ contract CrowdFunding {
         owner = msg.sender;
     }
 
-    function fund() public payable {
-        require(msg.value > 0, "Funding amount must be greater than 0");
-        require(block.timestamp < deadline, "Campaign has ended");
+    function addTier(
+        string memory _name,
+        uint256 _amount
+    ) public onlyOwner {
+        require(_amount > 0, "Amount for the tier should be greater than 0");
+        tiers.push(Tier(_name, _amount, 0));
     }
 
-    function withdraw() public {
-        require(msg.sender == owner, "Only Owner function");
+    function removeTier(
+        uint256 _index
+    ) public onlyOwner {
+        require(_index < tiers.length, "Tier doesn't exist");
+        tiers[_index] = tiers[tiers.length-1];
+        tiers.pop();
+    }
+
+    function viewTiers(
+    ) public view returns(Tier[] memory) {
+        return tiers;
+    }
+
+    function fund(uint256 _tierIndex) public payable {
+        require(block.timestamp < deadline, "Campaign has ended");
+
+        require(_tierIndex < tiers.length, "Invalid tier");
+        require(msg.value == tiers[_tierIndex].amount, "Invalid amount for the tier");
+
+        tiers[_tierIndex].backers++;
+    }
+
+    function withdraw() public onlyOwner {
         require(address(this).balance >= goal,"Goal is not completed");
 
         uint256 balance = address(this).balance;
