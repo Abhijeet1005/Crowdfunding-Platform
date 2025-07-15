@@ -1,5 +1,5 @@
 // IMPORTANT: Replace these with your actual deployed contract addresses
-export const CROWDFUNDING_MANAGER_ADDRESS = "0x1234567890123456789012345678901234567890"; // Replace with actual address
+export const CROWDFUNDING_MANAGER_ADDRESS = "0x5Ff84Bf37f2057280C233F77b8b0aCe29D2dA876"; // Replace with actual address
 export const SEPOLIA_CHAIN_ID = 11155111;
 
 export const CROWDFUNDING_MANAGER_ABI = [

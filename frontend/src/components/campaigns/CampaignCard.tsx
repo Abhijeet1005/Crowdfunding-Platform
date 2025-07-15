@@ -31,7 +31,6 @@ export function CampaignCard({ campaign, details, onViewDetails }: CampaignCardP
 
   return (
     <Card className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300">
-      <BorderBeam size={250} duration={12} delay={0} />
       
       <CardHeader className="space-y-2">
         <div className="flex items-start justify-between">
