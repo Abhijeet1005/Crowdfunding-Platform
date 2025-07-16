@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Contract, formatEther, parseEther } from 'ethers';
+import { useState } from 'react';
+import { Contract, parseEther } from 'ethers';
 import toast from 'react-hot-toast';
 import { useWallet } from './useWallet';
 import { 
@@ -7,10 +7,10 @@ import {
   CROWDFUNDING_MANAGER_ABI, 
   CROWDFUNDING_ABI 
 } from '../constants/contracts';
-import { Campaign, CampaignDetails, Tier } from '../types/contracts';
+import { Campaign, CampaignDetails } from '../types/contracts';
 
 export function useContracts() {
-  const { signer, isConnected } = useWallet();
+  const { signer } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
 
   const getManagerContract = () => {
@@ -40,9 +40,9 @@ export function useContracts() {
       
       toast.success('Campaign created successfully!');
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating campaign:', error);
-      toast.error('Failed to create campaign: ' + (error.reason || error.message));
+      toast.error('Failed to create campaign: ' + ((error as { reason?: string; message?: string })?.reason || (error as { message?: string })?.message));
       return false;
     } finally {
       setIsLoading(false);
@@ -53,12 +53,15 @@ export function useContracts() {
     try {
       const contract = getManagerContract();
       const campaigns = await contract.getAllCampaigns();
-      return campaigns.map((campaign: any) => ({
-        campaignAddress: campaign.campaignAddress,
-        owner: campaign.owner,
-        name: campaign.name,
-        creationTime: campaign.creationTime,
-      }));
+      return campaigns.map((campaign: unknown) => {
+        const c = campaign as { campaignAddress: string; owner: string; name: string; creationTime: string };
+        return {
+          campaignAddress: c.campaignAddress,
+          owner: c.owner,
+          name: c.name,
+          creationTime: c.creationTime,
+        };
+      });
     } catch (error) {
       console.error('Error fetching campaigns:', error);
       toast.error('Failed to fetch campaigns');
@@ -70,12 +73,15 @@ export function useContracts() {
     try {
       const contract = getManagerContract();
       const campaigns = await contract.getUserCampaigns(userAddress);
-      return campaigns.map((campaign: any) => ({
-        campaignAddress: campaign.campaignAddress,
-        owner: campaign.owner,
-        name: campaign.name,
-        creationTime: campaign.creationTime,
-      }));
+      return campaigns.map((campaign: unknown) => {
+        const c = campaign as { campaignAddress: string; owner: string; name: string; creationTime: string };
+        return {
+          campaignAddress: c.campaignAddress,
+          owner: c.owner,
+          name: c.name,
+          creationTime: c.creationTime,
+        };
+      });
     } catch (error) {
       console.error('Error fetching user campaigns:', error);
       toast.error('Failed to fetch user campaigns');
@@ -86,7 +92,6 @@ export function useContracts() {
   const getCampaignDetails = async (address: string): Promise<CampaignDetails | null> => {
     try {
       const contract = getCampaignContract(address);
-      
       const [name, description, goal, deadline, owner, balance, tiers] = await Promise.all([
         contract.name(),
         contract.description(),
@@ -94,7 +99,7 @@ export function useContracts() {
         contract.deadline(),
         contract.owner(),
         contract.getContractBalance(),
-        contract.viewTiers(),
+        contract.getTiers(),
       ]);
 
       return {
@@ -104,11 +109,14 @@ export function useContracts() {
         deadline,
         owner,
         balance,
-        tiers: tiers.map((tier: any) => ({
-          name: tier.name,
-          amount: tier.amount,
-          backers: tier.backers,
-        })),
+        tiers: (tiers as unknown[]).map((tier: unknown) => {
+          const t = tier as { name: string; amount: string; backers: string };
+          return {
+            name: t.name,
+            amount: BigInt(t.amount),
+            backers: BigInt(t.backers),
+          };
+        }),
       };
     } catch (error) {
       console.error('Error fetching campaign details:', error);
@@ -128,9 +136,9 @@ export function useContracts() {
       
       toast.success('Tier added successfully!');
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error adding tier:', error);
-      toast.error('Failed to add tier: ' + (error.reason || error.message));
+      toast.error('Failed to add tier: ' + ((error as { reason?: string; message?: string })?.reason || (error as { message?: string })?.message));
       return false;
     } finally {
       setIsLoading(false);
@@ -147,9 +155,9 @@ export function useContracts() {
       
       toast.success('Tier removed successfully!');
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error removing tier:', error);
-      toast.error('Failed to remove tier: ' + (error.reason || error.message));
+      toast.error('Failed to remove tier: ' + ((error as { reason?: string; message?: string })?.reason || (error as { message?: string })?.message));
       return false;
     } finally {
       setIsLoading(false);
@@ -166,9 +174,9 @@ export function useContracts() {
       
       toast.success('Campaign funded successfully!');
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error funding campaign:', error);
-      toast.error('Failed to fund campaign: ' + (error.reason || error.message));
+      toast.error('Failed to fund campaign: ' + ((error as { reason?: string; message?: string })?.reason || (error as { message?: string })?.message));
       return false;
     } finally {
       setIsLoading(false);
@@ -185,9 +193,9 @@ export function useContracts() {
       
       toast.success('Funds withdrawn successfully!');
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error withdrawing funds:', error);
-      toast.error('Failed to withdraw funds: ' + (error.reason || error.message));
+      toast.error('Failed to withdraw funds: ' + ((error as { reason?: string; message?: string })?.reason || (error as { message?: string })?.message));
       return false;
     } finally {
       setIsLoading(false);

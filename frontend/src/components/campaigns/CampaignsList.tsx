@@ -3,6 +3,7 @@ import { Loader2, Search } from 'lucide-react';
 import { CampaignCard } from './CampaignCard';
 import { Input } from '../ui/Input';
 import { useContracts } from '../../hooks/useContracts';
+import { useWallet } from '../../hooks/useWallet';
 import { Campaign, CampaignDetails } from '../../types/contracts';
 
 interface CampaignsListProps {
@@ -11,14 +12,19 @@ interface CampaignsListProps {
 
 export function CampaignsList({ onViewDetails }: CampaignsListProps) {
   const { getAllCampaigns, getCampaignDetails } = useContracts();
+  const { isConnected } = useWallet();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [campaignDetails, setCampaignDetails] = useState<Record<string, CampaignDetails>>({});
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    loadCampaigns();
-  }, []);
+    if (isConnected) {
+      loadCampaigns();
+    } else {
+      setLoading(false);
+    }
+  }, [isConnected]);
 
   const loadCampaigns = async () => {
     try {
@@ -53,6 +59,14 @@ export function CampaignsList({ onViewDetails }: CampaignsListProps) {
     campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     campaign.owner.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (!isConnected) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-gray-500">Please connect your wallet to view campaigns.</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
