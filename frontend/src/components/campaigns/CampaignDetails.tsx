@@ -130,7 +130,7 @@ export function CampaignDetails({ campaignAddress, onBack }: CampaignDetailsProp
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">{details.name} at {}</h1>
+                  <h1 className="text-3xl font-bold text-gray-900">{details.name}</h1>
                   <div className="flex items-center space-x-1 text-gray-500 mt-2">
                     <User className="w-4 h-4" />
                     <span>by {details.owner}</span>
