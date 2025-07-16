@@ -41,7 +41,7 @@ export function Header({ currentView, onViewChange }: HeaderProps) {
                 >
                   All Campaigns
                 </button>
-                <button
+                {/* <button
                   onClick={() => onViewChange('create')}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     currentView === 'create'
@@ -50,7 +50,7 @@ export function Header({ currentView, onViewChange }: HeaderProps) {
                   }`}
                 >
                   Create Campaign
-                </button>
+                </button> */}
                 <button
                   onClick={() => onViewChange('dashboard')}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -75,7 +75,7 @@ export function Header({ currentView, onViewChange }: HeaderProps) {
                   className="flex items-center space-x-1"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Create</span>
+                  <span>Create Campaign</span>
                 </Button>
               </div>
             )}
