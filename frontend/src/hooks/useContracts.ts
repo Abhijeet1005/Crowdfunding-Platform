@@ -92,7 +92,7 @@ export function useContracts() {
   const getCampaignDetails = async (address: string): Promise<CampaignDetails | null> => {
     try {
       const contract = getCampaignContract(address);
-      const [name, description, goal, deadline, owner, balance, tiers] = await Promise.all([
+      const [name, description, goal, deadline, owner, balance, tiers, state] = await Promise.all([
         contract.name(),
         contract.description(),
         contract.goal(),
@@ -100,6 +100,7 @@ export function useContracts() {
         contract.owner(),
         contract.getContractBalance(),
         contract.getTiers(),
+        contract.getCampaignStatus(),
       ]);
 
       return {
@@ -109,6 +110,7 @@ export function useContracts() {
         deadline,
         owner,
         balance,
+        state: Number(state),
         tiers: (tiers as unknown[]).map((tier: unknown) => {
           const t = tier as { name: string; amount: string; backers: string };
           return {
@@ -118,7 +120,7 @@ export function useContracts() {
           };
         }),
       };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error fetching campaign details:', error);
       toast.error('Failed to fetch campaign details');
       return null;

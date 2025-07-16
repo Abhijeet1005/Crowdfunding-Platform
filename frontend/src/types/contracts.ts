@@ -18,6 +18,7 @@ export interface CampaignDetails {
   deadline: bigint;
   owner: string;
   balance: bigint;
+  state: number;
   tiers: Tier[];
 }
 

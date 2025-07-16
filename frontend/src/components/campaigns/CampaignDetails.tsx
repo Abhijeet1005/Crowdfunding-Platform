@@ -100,7 +100,13 @@ export function CampaignDetails({ campaignAddress, onBack }: CampaignDetailsProp
 
   const isOwner = address?.toLowerCase() === details.owner.toLowerCase();
   const progressPercentage = (Number(details.balance) / Number(details.goal)) * 100;
-  const isActive = Number(details.deadline) * 1000 > Date.now();
+  const CAMPAIGN_STATE: { [key: number]: string } = {
+    0: 'Active',
+    1: 'Successful',
+    2: 'Failed',
+  };
+  const isActive = details.state === 0;
+  const isSuccessful = details.state === 1;
   const canWithdraw = Number(details.balance) >= Number(details.goal);
 
   const formatDate = (timestamp: bigint) => {
@@ -124,18 +130,20 @@ export function CampaignDetails({ campaignAddress, onBack }: CampaignDetailsProp
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">{details.name}</h1>
+                  <h1 className="text-3xl font-bold text-gray-900">{details.name} at {}</h1>
                   <div className="flex items-center space-x-1 text-gray-500 mt-2">
                     <User className="w-4 h-4" />
-                    <span>by {details.owner.slice(0, 6)}...{details.owner.slice(-4)}</span>
+                    <span>by {details.owner}</span>
                   </div>
                 </div>
                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  isActive 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-gray-100 text-gray-800'
+                  isActive
+                    ? 'bg-green-100 text-green-800'
+                    : isSuccessful
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-gray-100 text-gray-800'
                 }`}>
-                  {isActive ? 'Active' : 'Ended'}
+                  {CAMPAIGN_STATE[details.state]}
                 </div>
               </div>
 
@@ -269,7 +277,7 @@ export function CampaignDetails({ campaignAddress, onBack }: CampaignDetailsProp
                         </Button>
                       )}
                     </div>
-                    
+                    {/* Only allow funding if campaign is active and user is not owner */}
                     {!isOwner && isActive && (
                       <Button
                         onClick={() => handleFund(index, tier.amount)}

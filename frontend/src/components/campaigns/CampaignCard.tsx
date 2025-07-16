@@ -3,7 +3,6 @@ import { formatEther } from 'ethers';
 import { Calendar, Target, User, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { BorderBeam } from '../magicui/border-beam';
 import NumberTicker from '../magicui/number-ticker';
 import { Campaign, CampaignDetails } from '../../types/contracts';
 
@@ -24,10 +23,13 @@ export function CampaignCard({ campaign, details, onViewDetails }: CampaignCardP
     return Math.min(progress, 100);
   };
 
-  const isActive = () => {
-    if (!details) return true;
-    return Number(details.deadline) * 1000 > Date.now();
+  const CAMPAIGN_STATE: { [key: number]: string } = {
+    0: 'Active',
+    1: 'Successful',
+    2: 'Failed',
   };
+  const isActive = details && typeof details.state === 'number' ? details.state === 0 : true;
+  const statusLabel = details && typeof details.state === 'number' ? CAMPAIGN_STATE[details.state] : (Number(details?.deadline) * 1000 > Date.now() ? 'Active' : 'Ended');
 
   return (
     <Card className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300">
@@ -42,11 +44,13 @@ export function CampaignCard({ campaign, details, onViewDetails }: CampaignCardP
             </div>
           </div>
           <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-            isActive() 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-gray-100 text-gray-800'
+            isActive
+              ? 'bg-green-100 text-green-800'
+              : statusLabel === 'Successful'
+                ? 'bg-blue-100 text-blue-800'
+                : 'bg-gray-100 text-gray-800'
           }`}>
-            {isActive() ? 'Active' : 'Ended'}
+            {statusLabel}
           </div>
         </div>
       </CardHeader>
