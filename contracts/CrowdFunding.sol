@@ -46,12 +46,12 @@ contract Crowdfunding {
         string memory _name,
         string memory _description,
         uint256 _goal,
-        uint256 _duratyionInDays
+        uint256 _durationInDays
     ) {
         name = _name;
         description = _description;
         goal = _goal;
-        deadline = block.timestamp + (_duratyionInDays * 1 days);
+        deadline = block.timestamp + (_durationInDays * 1 days);
         owner = _owner;
         state = CampaignState.Active;
     }
