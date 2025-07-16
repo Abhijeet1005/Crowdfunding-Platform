@@ -6,7 +6,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useContracts } from '../../hooks/useContracts';
 import { useWallet } from '../../hooks/useWallet';
-import { CampaignDetails as CampaignDetailsType, Tier } from '../../types/contracts';
+import { CampaignDetails as CampaignDetailsType } from '../../types/contracts';
 
 interface CampaignDetailsProps {
   campaignAddress: string;
@@ -15,15 +15,19 @@ interface CampaignDetailsProps {
 
 export function CampaignDetails({ campaignAddress, onBack }: CampaignDetailsProps) {
   const { getCampaignDetails, addTier, removeTier, fundCampaign, withdrawFunds, isLoading } = useContracts();
-  const { address } = useWallet();
+  const { address, isConnected } = useWallet();
   const [details, setDetails] = useState<CampaignDetailsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [newTier, setNewTier] = useState({ name: '', amount: '' });
   const [showAddTier, setShowAddTier] = useState(false);
 
   useEffect(() => {
-    loadCampaignDetails();
-  }, [campaignAddress]);
+    if (isConnected) {
+      loadCampaignDetails();
+    } else {
+      setLoading(false);
+    }
+  }, [campaignAddress, isConnected]);
 
   const loadCampaignDetails = async () => {
     try {
@@ -68,6 +72,14 @@ export function CampaignDetails({ campaignAddress, onBack }: CampaignDetailsProp
       loadCampaignDetails();
     }
   };
+
+  if (!isConnected) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-gray-500">Please connect your wallet to view campaign details.</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
