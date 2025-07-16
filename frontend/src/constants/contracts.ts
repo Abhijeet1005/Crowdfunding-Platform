@@ -245,7 +245,7 @@ export const CROWDFUNDING_ABI = [
 			},
 			{
 				"internalType": "uint256",
-				"name": "_duratyionInDays",
+				"name": "_durationInDays",
 				"type": "uint256"
 			}
 		],
