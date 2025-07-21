@@ -4,6 +4,7 @@ import { Button } from '../ui/Button';
 import { ShimmerButton } from '../magicui/shimmer-button';
 import AnimatedGradientText from '../magicui/animated-gradient-text';
 import { useWallet } from '../../hooks/useWallet';
+import { CROWDFUNDING_MANAGER_ADDRESS } from '@/constants/contracts';
 
 interface HeaderProps {
   currentView: string;
@@ -86,6 +87,13 @@ export function Header({ currentView, onViewChange }: HeaderProps) {
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span>{formatAddress(address!)}</span>
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(`https://sepolia.etherscan.io/address/${CROWDFUNDING_MANAGER_ADDRESS}#code`, '_blank')}
+                >
+                  View Contract
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
